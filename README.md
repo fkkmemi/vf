@@ -1,29 +1,29 @@
 # vf
 
-## Project setup
-```
-yarn install
+Vue & Firebase lecture
+
+# setup
+
+## dependecies install
+
+```bash
+$ yarn
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+## firebase init
+
+```bash
+$ sudo npm i firebase-tools -g 
+$ firebase login
+$ firebase init hosting
+# select your project
+? Select a default Firebase project for this directory: your-project
+? What do you want to use as your public directory? dist
+? Configure as a single-page app (rewrite all urls to /index.html)? No
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+## firebase deploy
 
-### Run your tests
+```bash
+$ yarn firebase:deploy
 ```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
