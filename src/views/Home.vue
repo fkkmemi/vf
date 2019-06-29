@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-alert type="primary" :value="true" v-for="i in arras">
+    <!-- <v-alert type="primary" :value="true" v-for="i in arras">
       abcd {{ i }}
 
-    </v-alert>
+    </v-alert> -->
   </div>
 </template>
 
