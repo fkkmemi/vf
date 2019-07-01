@@ -26,6 +26,14 @@ export default new Router({
       component: () => import('./views/About2.vue')
     },
     {
+      path: '/lectures/card',
+      component: () => import('./views/lectures/card.vue')
+    },
+    {
+      path: '/lectures/card',
+      component: () => import('./views/lectures/card.vue')
+    },
+    {
       path: '*',
       component: () => import('./views/e404.vue')
     }
