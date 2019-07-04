@@ -27,3 +27,18 @@ $ firebase init hosting
 ```bash
 $ yarn firebase:deploy
 ```
+
+## firebase config file
+
+**./firebaseConfig.js**  
+```javascript
+export default {
+  apiKey: '...',
+  authDomain: 'x.firebaseapp.com',
+  databaseURL: 'https://x.firebaseio.com',
+  projectId: 'x',
+  storageBucket: '',
+  messagingSenderId: '111',
+  appId: '12'
+}
+```
