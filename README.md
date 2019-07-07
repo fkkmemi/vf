@@ -42,3 +42,9 @@ export default {
   appId: '12'
 }
 ```
+
+## firebase functions install
+
+```bash
+$ firebase init functions
+```
