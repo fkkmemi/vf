@@ -84,12 +84,11 @@ export default {
     }
   },
   methods: {
-    create () {
-      this.$axios.post('http://localhost:5000/test-vf-2-891b8/us-central1/test')
-        .then(r => {
-          this.textCreate = r.data
-        })
-        .catch(e => console.error(e.message))
+    async create () {
+      // this.$toasted.show('hello billo')
+      this.$toasted.global.error('잘못했어요?')
+      const r = await this.$axios.post('http://localhost:5000/test-vf-2-891b8/us-central1/test/wef')
+      this.textCreate = r.data
     },
     read () {
       this.$axios.get('http://localhost:5000/test-vf-2-891b8/us-central1/test/33423')
