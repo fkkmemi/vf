@@ -1,4 +1,7 @@
 const app = require('express')()
+const cors = require('cors')
+
+app.use(cors())
 
 app.post('/', (req, res) => {
   res.send('post ok')
