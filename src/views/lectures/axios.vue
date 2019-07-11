@@ -85,9 +85,7 @@ export default {
   },
   methods: {
     async create () {
-      // this.$toasted.show('hello billo')
-      this.$toasted.global.error('잘못했어요?')
-      const r = await this.$axios.post('http://localhost:5000/test-vf-2-891b8/us-central1/test/wef')
+      const r = await this.$axios.post('http://localhost:5000/test-vf-2-891b8/us-central1/test')
       this.textCreate = r.data
     },
     read () {
