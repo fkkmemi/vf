@@ -47,6 +47,10 @@ export default new Router({
       component: () => import('./views/lectures/axios.vue')
     },
     {
+      path: '/lectures/mother',
+      component: () => import('./views/lectures/mother')
+    },
+    {
       path: '*',
       component: () => import('./views/e404.vue')
     }
