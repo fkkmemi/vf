@@ -51,6 +51,10 @@ export default new Router({
       component: () => import('./views/lectures/mother')
     },
     {
+      path: '/lectures/vuex',
+      component: () => import('./views/lectures/vuex')
+    },
+    {
       path: '*',
       component: () => import('./views/e404.vue')
     }
