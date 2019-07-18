@@ -1,9 +1,6 @@
 <template>
   <div>
-    <!-- <v-alert type="primary" :value="true" v-for="i in arras">
-      abcd {{ i }}
-
-    </v-alert> -->
+    여기는 메인페이지
   </div>
 </template>
 

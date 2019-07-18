@@ -10,7 +10,7 @@
         </span>
       </v-card-title>
       <v-card-actions>
-        <v-btn color="primary" block>
+        <v-btn color="primary" block @click="signInWithGoogle">
           <v-icon>mdi-google</v-icon>
           <v-divider vertical class="mx-3"></v-divider>
           Google 계정으로 로그인
@@ -47,6 +47,22 @@
     </v-form>
   </v-card>
 </template>
+<script>
+export default {
+  data () {
+    return {
+      valid: false
+    }
+  },
+  methods: {
+    async signInWithGoogle () {
+      const provider = new this.$firebase.auth.GoogleAuthProvider()
+      this.$firebase.auth().languageCode = 'ko'
+      await this.$firebase.auth().signInWithPopup(provider)
+    }
+  }
+}
+</script>
 <style scoped>
 .recaptcha-terms-text {
     font-size: 12px;
