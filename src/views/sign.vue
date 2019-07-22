@@ -39,8 +39,8 @@
 
       </v-flex>
       <v-flex xs12 sm5>
-        <sign-in v-if="type"></sign-in>
-        <sign-up v-else></sign-up>
+        <sign-in v-if="type" @changeType="type = !type"></sign-in>
+        <sign-up v-else @changeType="type = !type"></sign-up>
       </v-flex>
 
     </v-layout>

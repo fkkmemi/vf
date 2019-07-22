@@ -6,7 +6,7 @@
         <v-spacer></v-spacer>
         <span class="caption">
           또는&nbsp;
-          <a >회원가입</a>
+          <a @click="$emit('changeType')">회원가입</a>
         </span>
       </v-card-title>
       <v-card-actions>
