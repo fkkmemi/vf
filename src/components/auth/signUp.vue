@@ -99,9 +99,14 @@ export default {
       this.$firebase.auth().languageCode = 'ko'
       await this.$firebase.auth().signInWithPopup(provider)
     },
-    createWithEmailAndPassword () {
+    async createWithEmailAndPassword () {
       if (!this.$refs.form.validate()) return this.$toasted.global.error('입력 폼을 올바르게 작성해주세요.')
-      alert('ok')
+      await this.$firebase.auth().createUserWithEmailAndPassword(this.form.email, this.form.password)
+      const user = this.$firebase.auth().currentUser
+      const result = await user.updateProfile({
+        displayName: `${this.form.lastName} ${this.form.firstName}`
+      })
+      console.log(result)
     }
   }
 }

@@ -63,8 +63,6 @@ export default {
   data () {
     return {
       form: {
-        firstName: '',
-        lastName: '',
         email: '',
         password: ''
       },
@@ -85,9 +83,9 @@ export default {
       this.$firebase.auth().languageCode = 'ko'
       await this.$firebase.auth().signInWithPopup(provider)
     },
-    signInWithEmailAndPassword () {
+    async signInWithEmailAndPassword () {
       if (!this.$refs.form.validate()) return this.$toasted.global.error('입력 폼을 올바르게 작성해주세요.')
-      alert('ok')
+      await this.$firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password)
     }
   }
 }
