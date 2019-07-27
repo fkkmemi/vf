@@ -20,12 +20,15 @@ Vue.prototype.$isFirebaseAuth = false
 
 firebase.auth().onAuthStateChanged((user) => {
   Vue.prototype.$isFirebaseAuth = true
-  console.log(user)
-  if (user) {
-    router.push('/')
-  } else {
-    router.push('/sign')
-  }
+  // console.log(user)
+
   // store.commit('setUser', user)
   store.dispatch('getUser', user)
+    .then(() => {
+      if (user) {
+        router.push('/')
+      } else {
+        router.push('/sign')
+      }
+    })
 })
