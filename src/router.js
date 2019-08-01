@@ -6,7 +6,9 @@ import Home from './views/Home.vue'
 Vue.use(Router)
 
 const levelCheck = (to, from, next) => {
-  if (store.state.claims.level === undefined) return next('/userProfile')
+  // todo: business logic ... 다음에 수정..
+  if (!store.state.user) return next('/sign')
+  if (!store.state.claims) return next('/userProfile')
   next()
 }
 
@@ -19,11 +21,6 @@ const router = new Router({
       name: 'home',
       component: Home,
       beforeEnter: levelCheck
-      // beforeEnter: (to, from, next) => {
-      //   // next()
-      //   if (store.state.claims.level === undefined) return next('/userProfile')
-      //   next()
-      // }
     },
     {
       path: '/sign',
@@ -77,11 +74,26 @@ const router = new Router({
   ]
 })
 
+const waitFirebase = () => {
+  return new Promise((resolve, reject) => {
+    let cnt = 0
+    const tmr = setInterval(() => {
+      if (store.state.firebaseLoaded) {
+        clearInterval(tmr)
+        resolve()
+      } else if (cnt++ > 200) reject(Error('제한 시간 초과, 인터넷 연결을 확인하세요'))
+    }, 10)
+  })
+}
+
 router.beforeEach((to, from, next) => {
   Vue.prototype.$Progress.start()
-  if (store.state.firebaseLoaded) {
-    next()
-  }
+  // if (store.state.firebaseLoaded) {
+  //   next()
+  // } else next()
+  waitFirebase()
+    .then(() => next())
+    .catch(e => Vue.prototype.$toasted.global.error(e.message))
 })
 
 router.afterEach((to, from) => {

@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Toasted from 'vue-toasted'
+import router from '../router'
 
 Vue.use(Toasted, {
-  iconPack: 'mdi'
+  iconPack: 'mdi',
+  router
 })
 
 Vue.toasted.register('error', (payload) => {

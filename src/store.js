@@ -38,7 +38,6 @@ export default new Vuex.Store({
       commit('setToken', token)
       const { claims } = await user.getIdTokenResult()
       commit('setClaims', claims)
-      console.log('user update')
 
       return true
     }
