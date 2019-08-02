@@ -117,7 +117,7 @@
             <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" @click="$firebase.auth().signOut()">로그아웃</v-btn>
+              <v-btn color="primary" @click="signOut">로그아웃</v-btn>
 
             </v-card-actions>
 
@@ -185,11 +185,34 @@ export default {
               to: '/lectures/layout'
             }
           ]
+        },
+        {
+          icon: 'mdi-alert-box',
+          title: 'test',
+          active: false,
+          subItems: [
+            {
+              title: 'lv0',
+              to: '/test/lv0'
+            },
+            {
+              title: 'lv1',
+              to: '/test/lv1'
+            },
+            {
+              title: 'lv2',
+              to: '/test/lv2'
+            }
+          ]
         }
       ]
     }
   },
   methods: {
+    async signOut () {
+      this.$firebase.auth().signOut()
+      this.$router.push('/sign')
+    }
   }
 }
 </script>
