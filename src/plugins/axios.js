@@ -3,7 +3,7 @@ import axios from 'axios'
 import store from '../store'
 
 const firebaseAPI = axios.create({
-  baseURL: 'http://localhost:5000/test-vf-2-891b8/us-central1/',
+  baseURL: process.env.NODE_ENV === 'production' ? 'https://us-central1-test-vf-2-891b8.cloudfunctions.net/' : 'http://localhost:5000/test-vf-2-891b8/us-central1/',
   timeout: 5000,
   headers: { 'X-Custom-Header': 'foobar' }
 })

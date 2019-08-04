@@ -4,7 +4,7 @@ const admin = require('firebase-admin')
 // // Create and Deploy Your First Cloud Functions
 // https://firebase.google.com/docs/functions/write-firebase-functions
 
-admin.initializeApp()
+admin.initializeApp({ credential: admin.credential.cert(require('./key.json')) })
 
 const db = admin.firestore()
 
@@ -23,7 +23,7 @@ exports.createUser = functions.auth.user().onCreate(async (user) => {
   await admin.auth().setCustomUserClaims(uid, claims)
 
   const d = {
-    uid, email, displayName, emailVerified, photoURL, disabled
+    uid, email, displayName, emailVerified, photoURL, disabled, level: claims.level
   }
   const r = await db.collection('users').doc(uid).set(d)
   return r
