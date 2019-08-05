@@ -11,9 +11,7 @@ app.use(require('../middlewares/verifyToken'))
 
 app.get('/users', async (req, res) => {
   if (req.claims.level > 0) return res.status(403).send({ message: 'not authorized' })
-  console.log('admin here')
   const s = await db.collection('users').get()
-  console.log(s.size)
   const r = {
     items: [],
     totalCount: s.size
