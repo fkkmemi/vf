@@ -128,16 +128,16 @@
 
     <v-content>
       <vue-progress-bar></vue-progress-bar>
-      <v-container grid-list-md>
+      <v-container grid-list-md v-if="!$store.state.firebaseLoaded">
         <v-layout row wrap align-center justify-center>
-          <v-card color="transparent" flat v-if="!$store.state.firebaseLoaded">
-            <v-card-text class="text-xs-center">
+          <v-card color="transparent" flat>
+            <v-card-text class="text-center">
               <v-progress-circular
                 indeterminate
                 color="primary"
               ></v-progress-circular>
             </v-card-text>
-            <v-card-text class="text-xs-center">
+            <v-card-text class="text-center">
               인증 상태를 기다리는 중입니다.
             </v-card-text>
           </v-card>
