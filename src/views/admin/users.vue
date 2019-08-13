@@ -21,6 +21,9 @@
           solo-inverted
           clearable
         ></v-autocomplete>
+        <v-btn icon @click="list" :disabled="loading">
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
       </v-toolbar>
       <v-container grid-list-md fluid>
         <v-data-iterator
@@ -46,39 +49,7 @@
                 md4
                 lg3
               >
-                <v-card>
-                  <!-- <v-card-title><h4>{{ item.displayName }}</h4></v-card-title>
-                  <v-divider></v-divider>
-                  <v-list dense>
-                    <v-list-item>
-                      <v-list-item-content>e:</v-list-item-content>
-                      <v-list-item-content class="align-end">{{ item.email }}</v-list-item-content>
-                    </v-list-item>
-                  </v-list> -->
-                  <!-- <v-card-title>
-                    {{item.email}}
-                  </v-card-title>
-                  <v-divider></v-divider> -->
-                  <v-list-item three-line>
-                    <v-list-item-avatar
-                      size="125"
-                      tile
-                      rounded
-                    >
-                      <v-img :src="item.photoURL | imgCheck"></v-img>
-                    </v-list-item-avatar>
-
-                    <v-list-item-content class="align-self-start">
-                      <v-list-item-title
-                        class="headline mb-2"
-                        v-text="item.email"
-                      ></v-list-item-title>
-
-                      <!-- <v-list-item-subtitle v-text="item.displayName | nameCheck"></v-list-item-subtitle> -->
-                      <v-list-item-subtitle>{{item.displayName | nameCheck}}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-card>
+                <user-card :item="item"></user-card>
               </v-flex>
             </v-layout>
           </template>
@@ -91,7 +62,10 @@
 
 <script>
 import _ from 'lodash'
+import UserCard from '@/components/userCard'
+
 export default {
+  components: { UserCard },
   data () {
     return {
       headers: [
@@ -132,20 +106,10 @@ export default {
       if (n !== o) this.list()
     }
   },
-  filters: {
-    nameCheck: function (v) {
-      if (v) return v
-      return 'no name'
-    },
-    imgCheck (v) {
-      if (v) return v
-      return 'https://cdn.vuetifyjs.com/images/cards/foster.jpg'
-    }
-  },
   methods: {
-    async list () {
+    list () {
       this.loading = true
-      const r = await this.$axios.get('/admin/users', {
+      this.$axios.get('/admin/users', {
         params: {
           offset: this.options.page > 0 ? (this.options.page - 1) * this.options.itemsPerPage : 0,
           limit: this.options.itemsPerPage,
@@ -154,9 +118,16 @@ export default {
           search: this.email
         }
       })
-      this.totalCount = r.data.totalCount
-      this.items = r.data.items
-      this.loading = false
+        .then(({ data }) => {
+          this.totalCount = data.totalCount
+          this.items = data.items
+        })
+        .catch(e => {
+          this.$toasted.global.error(e.message)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     searchEmails: _.debounce(
       function (val) {
