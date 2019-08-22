@@ -7,6 +7,7 @@ import store from '../store'
 // Add the Firebase products that you want to use
 import 'firebase/auth'
 import 'firebase/firestore'
+import 'firebase/firebase-storage'
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)

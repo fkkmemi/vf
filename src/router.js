@@ -132,6 +132,10 @@ const router = new Router({
       component: () => import('./views/lectures/vuex')
     },
     {
+      path: '/lectures/storage',
+      component: () => import('./views/lectures/storage')
+    },
+    {
       path: '*',
       component: () => import('./views/e404.vue')
     }
