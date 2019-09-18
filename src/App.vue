@@ -205,6 +205,17 @@ export default {
               to: '/test/lv2'
             }
           ]
+        },
+        {
+          icon: 'mdi-account',
+          title: 'Admin',
+          active: false,
+          subItems: [
+            {
+              title: '회원 관리',
+              to: '/admin/users'
+            }
+          ]
         }
       ]
     }
