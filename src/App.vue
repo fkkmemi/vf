@@ -184,6 +184,10 @@ export default {
             {
               title: 'layout',
               to: '/lectures/layout'
+            },
+            {
+              title: 'rdb',
+              to: '/lectures/rdb'
             }
           ]
         },
