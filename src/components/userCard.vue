@@ -28,6 +28,10 @@
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn @click="del" color="error">삭제</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 <script>
@@ -63,6 +67,10 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    async del () {
+      await this.$axios.delete(`/admin/user/${this.item.uid}`)
+      this.$emit('del')
     }
   }
 }

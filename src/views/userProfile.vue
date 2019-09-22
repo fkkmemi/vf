@@ -1,9 +1,12 @@
 <template>
-  <div>
-    <p>user profile</p>
+  <v-container fluid="">
+    <v-card>
+      <v-alert type="error" v-if="!this.$store.state.user.emailVerified">이메일을 확인해주세요</v-alert>
+    </v-card>
+    <!-- <p>user profile</p>
     {{ JSON.stringify($store.state.claims, null, 2) }}
-    <v-btn color="success" @click="tokenUpdate">tokenUpdate</v-btn>
-  </div>
+    <v-btn color="success" @click="tokenUpdate">tokenUpdate</v-btn> -->
+  </v-container>
 </template>
 <script>
 export default {
