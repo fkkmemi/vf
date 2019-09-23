@@ -33,12 +33,12 @@
         <v-text-field
           label="성"
           v-model="form.lastName"
-          :rules="[rule.required, rule.minLength(1), rule.maxLength(2)]"
+          :rules="[rule.required, rule.minLength(1), rule.maxLength(10)]"
           ></v-text-field>
         <v-text-field
           label="이름"
           v-model="form.firstName"
-          :rules="[rule.required, rule.minLength(1), rule.maxLength(10)]"
+          :rules="[rule.required, rule.minLength(1), rule.maxLength(20)]"
           required
           ></v-text-field>
         <v-text-field
