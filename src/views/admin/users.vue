@@ -1,9 +1,10 @@
 <template>
-  <v-container grid-list-md>
+  <v-container fluid>
     <v-card>
       <v-toolbar
         dark
         color="teal"
+        flat
       >
         <v-toolbar-title>회원 관리</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -33,25 +34,46 @@
           :items-per-page="4"
           :loading="loading"
         >
+          <template v-slot:loading>
+            <v-card color="transparent" flat v-if="loading">
+              <v-card-text class="text-center">
+                <v-progress-circular
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+              </v-card-text>
+              <v-card-text class="text-center">
+                데이터를 불러오는 중입니다.
+              </v-card-text>
+            </v-card>
+          </template>
           <template v-slot:default="props">
-            <v-layout row wrap>
-              <v-flex xs12 v-if="loading" class="text-center">
-                <v-progress-circular indeterminate></v-progress-circular>
-                <p>데이터 로딩중</p>
-
-              </v-flex>
-              <v-flex
+            <v-row>
+              <v-col cols="12" v-if="loading" class="text-center">
+                <v-card color="transparent" flat v-if="loading">
+                  <v-card-text class="text-center">
+                    <v-progress-circular
+                      indeterminate
+                      color="primary"
+                    ></v-progress-circular>
+                  </v-card-text>
+                  <v-card-text class="text-center">
+                    데이터를 불러오는 중입니다.
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col
                 v-else
+                cols="12"
                 v-for="item in props.items"
                 :key="item.email"
-                xs12
-                sm6
-                md4
-                lg3
+                sm="6"
+                md="4"
+                lg="3"
               >
                 <user-card :item="item" @del="list"></user-card>
-              </v-flex>
-            </v-layout>
+              </v-col>
+            </v-row>
           </template>
 
         </v-data-iterator>

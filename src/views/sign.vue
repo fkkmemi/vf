@@ -1,53 +1,34 @@
 <template>
-  <!-- <v-card>
-    <v-card-title>
-      로그인
-    </v-card-title>
-    <v-card-text>
-      <v-text-field
-        label="email"
-        v-model="email"
-      ></v-text-field>
-      <v-text-field
-        label="password"
-        v-model="password"
-        type="password"
-      ></v-text-field>
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="primary" @click="signInWithGoogle">
-        <v-icon>mdi-google</v-icon>
-        구글로그인
-      </v-btn>
-      <v-btn color="primary" @click="signInEmail">
-        <v-icon>mdi-email</v-icon>
-        메일로그인
-      </v-btn>
-      <v-btn color="primary" @click="signOut">
-        <v-icon>mdi-logout</v-icon>
-        로그아웃
-      </v-btn>
+  <v-container fluid>
+    <v-row align="stretch" justify="center">
+      <v-col cols="12" sm="5" class="hidden-xs-only">
+        <v-card color="transparent" flat>
+          <v-parallax
+            dark
+            src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
+            height="500"
+          >
+            <v-row align="center" justify="center">
+              <h1 class="display-1 font-weight-thin mb-3">{{location.host}}</h1>
+            </v-row>
+            <v-row align="center" justify="center">
+              <h4 class="subheading">{{pkg.description}}</h4>
+            </v-row>
+          </v-parallax>
+        </v-card>
 
-    </v-card-actions>
-  </v-card> -->
-
-  <v-container grid-list-md>
-    <v-layout row wrap align-center justify-center>
-      <v-flex xs12 sm5 class="hidden-xs-only">
-        <v-img src="https://cfl.dropboxstatic.com/static/images/empty_states/sign-in-boulder@2x-vfl87XcA-.png"></v-img>
-
-      </v-flex>
-      <v-flex xs12 sm5>
+      </v-col>
+      <v-col cols="12" sm="5">
         <sign-in v-if="type" @changeType="type = !type"></sign-in>
         <sign-up v-else @changeType="type = !type"></sign-up>
-      </v-flex>
+      </v-col>
 
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import pkg from '../../package'
 import SignIn from '@/components/auth/signIn'
 import SignUp from '@/components/auth/signUp'
 
@@ -57,6 +38,8 @@ export default {
   },
   data () {
     return {
+      pkg,
+      location,
       type: true,
       email: '',
       password: ''
@@ -69,12 +52,10 @@ export default {
       await this.$firebase.auth().signInWithPopup(provider)
     },
     async signInEmail () {
-      const r = await this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-      console.log(r)
+      await this.$firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
     },
     async signOut () {
-      const r = await this.$firebase.auth().signOut()
-      console.log(r)
+      await this.$firebase.auth().signOut()
     }
   }
 }

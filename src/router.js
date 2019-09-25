@@ -5,13 +5,6 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
-// const levelCheck = (to, from, next) => {
-//   // todo: business logic ... 다음에 수정..
-//   if (!store.state.user) return next('/sign')
-//   if (!store.state.claims) return next('/userProfile')
-//   next()
-// }
-
 const adminCheck = (to, form, next) => {
   if (!store.state.user) {
     if (to.path !== '/sign') return next('/sign')
@@ -48,7 +41,7 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      beforeEnter: guestCheck
+      beforeEnter: userCheck
     },
     {
       path: '/sign',
@@ -62,7 +55,7 @@ const router = new Router({
     {
       path: '/admin/users',
       component: () => import('./views/admin/users'),
-      beforeEnter: guestCheck // adminCheck
+      beforeEnter: adminCheck
     },
     {
       path: '/test/lv0',
@@ -88,62 +81,6 @@ const router = new Router({
       }
     },
     {
-      path: '/about2',
-      component: () => import('./views/About2.vue')
-    },
-    {
-      path: '/about2',
-      component: () => import('./views/About2.vue')
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    },
-    {
-      path: '/about2',
-      component: () => import('./views/About2.vue')
-    },
-    {
-      path: '/lectures/card',
-      component: () => import('./views/lectures/card.vue')
-    },
-    {
-      path: '/lectures/layout',
-      component: () => import('./views/lectures/layout.vue')
-    },
-    {
-      path: '/lectures/notes',
-      component: () => import('./views/lectures/notes.vue')
-    },
-    {
-      path: '/lectures/axios',
-      component: () => import('./views/lectures/axios.vue')
-    },
-    {
-      path: '/lectures/mother',
-      component: () => import('./views/lectures/mother')
-    },
-    {
-      path: '/lectures/vuex',
-      component: () => import('./views/lectures/vuex')
-    },
-    {
-      path: '/lectures/storage',
-      component: () => import('./views/lectures/storage')
-    },
-    {
-      path: '/lectures/grid',
-      component: () => import('./views/lectures/grid')
-    },
-    {
-      path: '/lectures/rdb',
-      component: () => import('./views/lectures/rdb')
-    },
-    {
       path: '*',
       component: () => import('./views/e404.vue')
     }
@@ -157,16 +94,13 @@ const waitFirebase = () => {
       if (store.state.firebaseLoaded) {
         clearInterval(tmr)
         resolve()
-      } else if (cnt++ > 200) reject(Error('제한 시간 초과, 인터넷 연결을 확인하세요'))
+      } else if (cnt++ > 500) reject(Error('제한 시간 초과, 인터넷 연결을 확인하세요'))
     }, 10)
   })
 }
 
 router.beforeEach((to, from, next) => {
   Vue.prototype.$Progress.start()
-  // if (store.state.firebaseLoaded) {
-  //   next()
-  // } else next()
   waitFirebase()
     .then(() => next())
     .catch(e => Vue.prototype.$toasted.global.error(e.message))

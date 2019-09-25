@@ -1,51 +1,13 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" fixed app>
-      <!-- <v-toolbar flat color="transparent">
-        <v-toolbar-title>Account</v-toolbar-title>
-      </v-toolbar>
-      <v-list>
-        <v-list-group
-          v-for="item in items"
-          :key="item.title"
-          v-model="item.active"
-          :prepend-icon="item.icon"
-          no-action
-        >
-          <template v-slot:activator>
-            <v-list-tile>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-          <v-list-tile
-            v-for="subItem in item.subItems"
-            :key="subItem.title"
-            :to="subItem.to"
-          >
-            <v-list-tile-content>
-              <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-            </v-list-tile-content>
-
-            <v-list-tile-action>
-              <v-icon>{{ subItem.icon }}</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-
-        </v-list-group>
-      </v-list> -->
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title">
-            Account
+            {{ _.get($store.state.user, 'email', '로딩중')}}
           </v-list-item-title>
-          <!-- <v-list-item-subtitle>
-            subtext
-          </v-list-item-subtitle> -->
         </v-list-item-content>
       </v-list-item>
-
       <v-divider></v-divider>
 
       <v-list nav>
@@ -76,7 +38,11 @@
     </v-navigation-drawer>
     <v-app-bar color="indigo" dark app>
       <v-app-bar-nav-icon @click="drawer = !drawer" v-if="$store.state.user"></v-app-bar-nav-icon>
-      <v-toolbar-title>미정 0.0.1 {{ env }} </v-toolbar-title>
+      <v-toolbar-title>
+        <span>{{ pkg.description }}</span>
+        <span class="caption">&nbsp;v{{ pkg.version }}</span>
+        <span class="caption" v-if="env === 'development'">&nbsp;{{ env }}</span>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="$store.state.user">
         <v-menu offset-y>
@@ -87,40 +53,37 @@
             >
               <v-avatar
                 size="32"
-                color="grey lighten-4"
               >
-                <img v-if="$store.state.user.photoURL" :src="$store.state.user.photoURL" alt="avatar">
-                <v-icon v-else>mdi-account</v-icon>
+                <v-img :src="_.get($store.state.user, 'photoURL', null) ? $store.state.user.photoURL : require('@/assets/images/account-alert.png')" alt="avatar"></v-img>
               </v-avatar>
             </v-btn>
           </template>
           <v-card width="320">
-            <v-container grid-list-md>
-              <v-layout row wrap>
-                <v-flex xs4>
+            <v-container fluid>
+              <v-row>
+                <v-col cols="4">
                   <v-avatar
                     size="96"
-                    color="grey lighten-4"
+                    color="indigo"
                   >
-                    <img v-if="$store.state.user.photoURL" :src="$store.state.user.photoURL" alt="avatar">
-                    <v-icon v-else>mdi-account</v-icon>
+                    <v-img :src="_.get($store.state.user, 'photoURL', null) ? $store.state.user.photoURL : require('@/assets/images/account-alert.png')" alt="avatar"></v-img>
                   </v-avatar>
-                </v-flex>
-                <v-flex xs8>
+                </v-col>
+                <v-col cols="8">
                   <v-card-text>
                     <span class="font-weight-bold"> {{$store.state.user.displayName}}</span>
                     <br>
                     <span class="font-weight-thin">{{$store.state.user.email}}</span>
                   </v-card-text>
-                </v-flex>
-              </v-layout>
+                </v-col>
+              </v-row>
 
             </v-container>
             <v-divider></v-divider>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" @click="$router.push('userProfile')">회원정보</v-btn>
-              <v-btn color="primary" @click="signOut">로그아웃</v-btn>
+              <v-btn color="primary" outlined @click="$router.push('/userProfile')">회원정보</v-btn>
+              <v-btn color="warning" outlined @click="signOut">로그아웃</v-btn>
 
             </v-card-actions>
 
@@ -131,8 +94,8 @@
 
     <v-content>
       <vue-progress-bar></vue-progress-bar>
-      <v-container grid-list-md v-if="!$store.state.firebaseLoaded">
-        <v-layout row wrap align-center justify-center>
+      <v-container fluid v-if="!$store.state.firebaseLoaded">
+        <v-row align="center" justify="center">
           <v-card color="transparent" flat>
             <v-card-text class="text-center">
               <v-progress-circular
@@ -144,7 +107,7 @@
               인증 상태를 기다리는 중입니다.
             </v-card-text>
           </v-card>
-        </v-layout>
+        </v-row>
       </v-container>
       <router-view/>
     </v-content>
@@ -152,45 +115,24 @@
 </template>
 
 <script>
+import pkg from '../package'
 
 export default {
   name: 'App',
   data () {
     return {
       env: process.env.NODE_ENV,
+      pkg: pkg,
       drawer: false,
       items: [
         {
-          icon: 'mdi-alert',
+          icon: 'mdi-home',
           title: 'home',
           active: true,
           subItems: [
             {
-              title: 'dashboard',
+              title: 'Dashboard',
               to: '/'
-            },
-            {
-              title: 'About2',
-              to: '/about2'
-            }
-          ]
-        },
-        {
-          icon: 'mdi-alert-box',
-          title: 'Lectures',
-          active: false,
-          subItems: [
-            {
-              title: 'card',
-              to: '/lectures/card'
-            },
-            {
-              title: 'layout',
-              to: '/lectures/layout'
-            },
-            {
-              title: 'rdb',
-              to: '/lectures/rdb'
             }
           ]
         },
@@ -214,7 +156,7 @@ export default {
           ]
         },
         {
-          icon: 'mdi-account',
+          icon: 'mdi-account-key',
           title: 'Admin',
           active: false,
           subItems: [

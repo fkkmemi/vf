@@ -1,5 +1,5 @@
 <template>
-  <v-card color="transparent" height="500" flat>
+  <v-card color="transparent" height="500" flat :loading="loading">
     <v-form v-model="valid" ref="form" lazy-validation>
       <v-card-title primary-title>
         <span class="title">로그인</span>
@@ -74,28 +74,43 @@ export default {
         email: v => /.+@.+/.test(v) || '이메일 형식에 맞지 않습니다.',
         agree: v => !!v || '약관에 동의해야 진행됩니다.'
       },
-      valid: false
+      valid: false,
+      loading: false
     }
   },
   methods: {
     async signInWithGoogle () {
+      this.loading = true
       const provider = new this.$firebase.auth.GoogleAuthProvider()
       this.$firebase.auth().languageCode = 'ko'
-      await this.$firebase.auth().signInWithPopup(provider)
-      const user = this.$firebase.auth().currentUser
-      await user.getIdToken()
-      await this.$store.dispatch('getUser', user)
-      if (this.$store.state.claims.level === undefined) return this.$router.push('/userProfile')
-      this.$router.push('/')
+      try {
+        await this.$firebase.auth().signInWithPopup(provider)
+        const user = this.$firebase.auth().currentUser
+        await user.getIdToken()
+        await this.$store.dispatch('getUser', user)
+        if (this.$store.state.claims.level === undefined || this.$store.state.claims.level > 1) this.$router.push('/userProfile')
+        else this.$router.push('/')
+      } catch (e) {
+        this.$toasted.global.error(e.message)
+      } finally {
+        this.loading = false
+      }
     },
     async signInWithEmailAndPassword () {
+      this.loading = true
       if (!this.$refs.form.validate()) return this.$toasted.global.error('입력 폼을 올바르게 작성해주세요.')
-      await this.$firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password)
-      const user = this.$firebase.auth().currentUser
-      await user.getIdToken()
-      await this.$store.dispatch('getUser', user)
-      if (this.$store.state.claims.level === undefined) return this.$router.push('/userProfile')
-      this.$router.push('/')
+      try {
+        await this.$firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password)
+        const user = this.$firebase.auth().currentUser
+        await user.getIdToken()
+        await this.$store.dispatch('getUser', user)
+        if (this.$store.state.claims.level === undefined || this.$store.state.claims.level > 1) this.$router.push('/userProfile')
+        else this.$router.push('/')
+      } catch (e) {
+        this.$toasted.global.error(e.message)
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

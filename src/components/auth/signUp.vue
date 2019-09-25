@@ -1,5 +1,5 @@
 <template>
-  <v-card color="transparent" height="500" flat>
+  <v-card color="transparent" height="500" flat :loading="loading">
     <v-form v-model="valid" ref="form" lazy-validation>
       <v-card-title primary-title>
         <span class="title">회원가입</span>
@@ -90,29 +90,43 @@ export default {
         email: v => /.+@.+/.test(v) || '이메일 형식에 맞지 않습니다.',
         agree: v => !!v || '약관에 동의해야 진행됩니다.'
       },
-      valid: false
+      valid: false,
+      loading: false
     }
   },
   methods: {
     async signInWithGoogle () {
       const provider = new this.$firebase.auth.GoogleAuthProvider()
       this.$firebase.auth().languageCode = 'ko'
-      await this.$firebase.auth().signInWithPopup(provider)
-      await this.$firebase.auth().signOut()
-      this.$emit('changeType')
+      this.loading = true
+      try {
+        await this.$firebase.auth().signInWithPopup(provider)
+        await this.$firebase.auth().signOut()
+        this.$emit('changeType')
+      } catch (e) {
+        this.$toasted.global.error(e.message)
+      } finally {
+        this.loading = false
+      }
     },
     async createWithEmailAndPassword () {
       if (!this.$refs.form.validate()) return this.$toasted.global.error('입력 폼을 올바르게 작성해주세요.')
-      await this.$firebase.auth().createUserWithEmailAndPassword(this.form.email, this.form.password)
-      this.$toasted.global.notice('가입이 완료되었습니다. 이메일을 확인해주세요')
-      const user = this.$firebase.auth().currentUser
-      await user.updateProfile({
-        displayName: `${this.form.lastName} ${this.form.firstName}`
-      })
-      this.$firebase.auth().languageCode = 'ko'
-      await user.sendEmailVerification()
-      await this.$firebase.auth().signOut()
-      this.$emit('changeType')
+      try {
+        await this.$firebase.auth().createUserWithEmailAndPassword(this.form.email, this.form.password)
+        this.$toasted.global.notice('가입이 완료되었습니다. 이메일을 확인해주세요')
+        const user = this.$firebase.auth().currentUser
+        await user.updateProfile({
+          displayName: `${this.form.lastName} ${this.form.firstName}`
+        })
+        this.$firebase.auth().languageCode = 'ko'
+        await user.sendEmailVerification()
+        await this.$firebase.auth().signOut()
+        this.$emit('changeType')
+      } catch (e) {
+        this.$toasted.global.error(e.message)
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

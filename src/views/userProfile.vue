@@ -1,36 +1,68 @@
 <template>
   <v-container fluid>
     <v-card>
-      <v-alert type="error" v-if="!this.$store.state.user.emailVerified">이메일을 확인해주세요</v-alert>
+      <v-toolbar color="light-blue" dark dense flat>
+        <v-toolbar-title>회원 정보</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon :disabled="!valid" @click="changeName">
+          <v-icon>mdi-content-save</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-alert type="error" border="left" v-if="!_.get(this.$store.state.user, 'emailVerified', null)">이메일을 확인해주세요</v-alert>
       <v-card-text>
         <v-row>
-          <v-col cols="5">
-            <v-img :src="this.$store.state.user.photoURL"></v-img>
-
+          <v-col cols="12" sm="5">
+            <v-img v-if="_.get($store.state.user, 'photoURL', null)" :src="this.$store.state.user.photoURL"></v-img>
+            <template v-else>
+              <v-row align="center" justify="center">
+                <v-avatar
+                  size="200"
+                  color="indigo"
+                >
+                  <v-img :src="require('@/assets/images/account-alert.png')" alt="avatar"></v-img>
+                </v-avatar>
+              </v-row>
+            </template>
           </v-col>
-          <v-col cols="7">
+          <v-col cols="12" sm="7">
             <v-form v-model="valid" ref="form" lazy-validation>
-
-              <v-file-input
-                v-model="files"
-                label="사진 변경"
-                prepend-icon="mdi-camera"
-                @change="upload"
-              ></v-file-input>
-              <v-text-field
-                label="성"
-                v-model="form.lastName"
-                :rules="[rule.required, rule.minLength(1), rule.maxLength(10)]"
-                ></v-text-field>
-              <v-text-field
-                label="이름"
-                v-model="form.firstName"
-                :rules="[rule.required, rule.minLength(1), rule.maxLength(20)]"
-                required
-                ></v-text-field>
-              <v-btn color="primary" :disabled="!valid" @click="changeName">
-                이름 변경
-              </v-btn>
+              <v-row>
+                <v-col cols="12">
+                  <span class="title">계정 유형: {{levels[_.get($store.state.claims, 'level', 2)]}}</span>
+                </v-col>
+                <v-col cols="12">
+                  <v-alert type="warning" border="left" v-if="_.get($store.state.claims, 'level', 2) > 0">
+                    페이지 접근을 위해 관리자에게 승인 요청을 하시기 바랍니다.
+                  </v-alert>
+                </v-col>
+                <v-col cols="12">
+                  <v-file-input
+                    v-model="files"
+                    label="사진 변경"
+                    prepend-icon="mdi-camera"
+                    @change="upload"
+                    outlined
+                  ></v-file-input>
+                  <v-progress-linear v-if="progress > 0 && progress < 100" :value="progress"></v-progress-linear>
+                </v-col>
+                <v-col cols="4">
+                  <v-text-field
+                    label="성"
+                    v-model="form.lastName"
+                    :rules="[rule.required, rule.minLength(1), rule.maxLength(10)]"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="8">
+                  <v-text-field
+                    label="이름"
+                    v-model="form.firstName"
+                    :rules="[rule.required, rule.minLength(1), rule.maxLength(20)]"
+                    required
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
             </v-form>
           </v-col>
 
@@ -43,7 +75,7 @@
 export default {
   data () {
     return {
-      files: [],
+      files: null,
       loading: false,
       form: {
         firstName: '',
@@ -56,7 +88,9 @@ export default {
         minLength: length => v => v.length >= length || `${length}자리 이상으로 입력하세요.`,
         maxLength: length => v => v.length <= length || `${length}자리 이하으로 입력하세요.`
       },
-      valid: false
+      valid: false,
+      progress: 0,
+      levels: ['관리자', '사용자', '손님']
     }
   },
   async created () {
@@ -74,8 +108,18 @@ export default {
       await user.getIdToken(true)
       await this.$store.dispatch('getUser', user)
     },
-    upload () {
-      console.log(this.files)
+    async upload () {
+      const r = await this.$swal.fire({
+        title: '정말 변경하시겠습니까?',
+        type: 'warning',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+        showCancelButton: true
+      })
+      if (!r.value) {
+        this.file = null
+        return
+      }
       const storageRef = this.$firebase.storage().ref()
       this.loading = true
       const user = this.$firebase.auth().currentUser
@@ -83,51 +127,37 @@ export default {
 
       uploadTask.on(this.$firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
         (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log('Upload is ' + progress + '% done')
+          this.progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           switch (snapshot.state) {
             case this.$firebase.storage.TaskState.PAUSED: // or 'paused'
-              console.log('Upload is paused')
+              this.$toasted.global.error('Upload is paused')
               break
             case this.$firebase.storage.TaskState.RUNNING: // or 'running'
-              console.log('Upload is running')
+              // this.$toasted.global.notice('Upload is running')
               break
           }
         }, (error) => {
-          // A full list of error codes is available at
-          // https://firebase.google.com/docs/storage/web/handle-errors
-          switch (error.code) {
-            case 'storage/unauthorized':
-            // User doesn't have permission to access the object
-              console.error('storage/unauthorized')
-              break
-
-            case 'storage/canceled':
-            // User canceled the upload
-              console.error('storage/canceled')
-              break
-
-            case 'storage/unknown':
-            // Unknown error occurred, inspect error.serverResponse
-              console.error('storage/unknown')
-              break
-          }
+          this.$toasted.global.error(error.code)
           this.loading = false
         }, () => {
-        // Upload completed successfully, now we can get the download URL
-          uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
             user.updateProfile({
               photoURL: downloadURL
             })
-            console.log('File available at', downloadURL)
-            location.reload()
           })
           this.loading = false
         })
     },
     async changeName () {
       if (!this.$refs.form.validate()) return this.$toasted.global.error('입력 폼을 올바르게 작성해주세요.')
+      const r = await this.$swal.fire({
+        title: '정말 변경하시겠습니까?',
+        type: 'warning',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+        showCancelButton: true
+      })
+      if (!r.value) return
       const user = this.$firebase.auth().currentUser
       await user.updateProfile({
         displayName: `${this.form.lastName} ${this.form.firstName}`

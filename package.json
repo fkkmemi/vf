@@ -1,6 +1,7 @@
 {
   "name": "vf",
   "version": "0.1.0",
+  "description": "Vue & Firebase",
   "private": true,
   "scripts": {
     "fs": "firebase serve --only functions",
@@ -15,6 +16,7 @@
     "core-js": "^2.6.5",
     "firebase": "^6.2.4",
     "moment": "^2.24.0",
+    "sweetalert2": "^8.17.6",
     "vue": "^2.6.10",
     "vue-progressbar": "^0.7.5",
     "vue-router": "^3.0.3",
