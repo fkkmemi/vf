@@ -4,11 +4,14 @@
   "description": "Vue & Firebase",
   "private": true,
   "scripts": {
-    "fs": "firebase serve --only functions",
     "serve": "vue-cli-service serve",
+    "serve:be": "firebase serve --only functions",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "firebase:deploy": "vue-cli-service build && firebase deploy"
+    "deploy": "vue-cli-service build && firebase deploy",
+    "deploy:fe": "vue-cli-service build && firebase deploy --only hosting",
+    "predeploy:be": "cd functions && yarn",
+    "deploy:be": "firebase deploy --only functions"
   },
   "dependencies": {
     "axios": "^0.19.0",
