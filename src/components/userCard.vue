@@ -43,7 +43,7 @@ export default {
       loading: false,
       levels: [
         { value: 0, text: '관리자' },
-        { value: 1, text: '일반사용자' },
+        { value: 1, text: '사용자' },
         { value: 2, text: '손님' }
       ]
     }
