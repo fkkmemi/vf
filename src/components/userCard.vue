@@ -60,15 +60,17 @@ export default {
   },
   methods: {
     async levelChange (v) {
-      const r = await this.$swal.fire({
-        title: '정말 변경하시겠습니까?',
-        text: '변경 후 되돌릴 수 없습니다.',
-        type: 'warning',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
-        showCancelButton: true
-      })
-      if (!r.value) return
+      if (v.level === 0) {
+        const r = await this.$swal.fire({
+          title: '정말 변경하시겠습니까?',
+          text: '관리자는 권한은 위험할 수 있습니다.',
+          type: 'warning',
+          confirmButtonText: '확인',
+          cancelButtonText: '취소',
+          showCancelButton: true
+        })
+        if (!r.value) return
+      }
       this.loading = true
       try {
         await this.$axios.patch(`/admin/user/${v.uid}/level`, { level: v.level })

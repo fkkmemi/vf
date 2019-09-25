@@ -10,15 +10,11 @@ const firebaseAPI = axios.create({
 })
 
 firebaseAPI.interceptors.request.use(async (config) => {
-  // Do something before request is sent
   const dif = moment(store.state.claims.exp * 1000).diff(moment(), 'minutes')
-  console.log(dif)
   if (dif < 10) await store.dispatch('getToken')
-
   config.headers.authorization = store.state.token
   return config
 }, function (error) {
-  // Do something with request error
   return Promise.reject(error)
 })
 

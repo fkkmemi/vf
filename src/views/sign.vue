@@ -9,8 +9,8 @@
             height="500"
           >
             <v-row align="center" justify="center">
-              <h1 class="display-1 font-weight-thin mb-3">{{location.host}}</h1>
-            </v-row>
+              <h1 class="display-1 font-weight-thin mb-3">{{location.host.split('.')[0]}}</h1>
+              </v-row>
             <v-row align="center" justify="center">
               <h4 class="subheading">{{pkg.description}}</h4>
             </v-row>
