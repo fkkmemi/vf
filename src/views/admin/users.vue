@@ -1,186 +1,189 @@
 <template>
-  <v-card :loading="loading">
-    <v-toolbar color="transparent" dense flat>
-      <v-toolbar-title>{{ item.email }}</v-toolbar-title>
-      <v-spacer></v-spacer>
-
-      <v-btn @click="showDetail = !showDetail" icon>
-        <v-icon>{{ showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-      </v-btn>
-
-      <v-btn icon @click="del" color="error">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-divider class="mb-0"></v-divider>
-    <v-card-text>
-      <v-row>
-        <v-col cols="5">
-          <v-img aspect-ratio="1" :src="item.photoURL | imgCheck"></v-img>
-        </v-col>
-        <v-col cols="7">
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                이름
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{item.displayName | nameCheck}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                계정 유형
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{levels[item.level].text}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-menu bottom left>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    :color="levels[item.level].color"
-                    v-on="on"
-                  >
-                    <v-icon>{{ levels[item.level].icon }}</v-icon>
-                  </v-btn>
-                </template>
-
-                <v-list rounded>
-                  <v-list-item-group v-model="item.level" color="primary">
-                    <v-list-item
-                      v-for="(level, i) in levels"
-                      :key="i"
-                      @click="levelChange(i)"
-                    >
-                      <v-list-item-icon>
-                        <v-icon v-text="level.icon"></v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ level.text }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-              </v-menu>
-            </v-list-item-action>
-          </v-list-item>
-        </v-col>
-        <v-col cols="12" v-if="showDetail">
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                최초 등록일
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{new Date(item.createdAt).toLocaleString()}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                수정일
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{new Date(item.updatedAt).toLocaleString()}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                최근 방문일
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{new Date(item.visitedAt).toLocaleString()}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item two-line>
-            <v-list-item-content>
-              <v-list-item-title>
-                최근 방문 횟수
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{item.visitCount}}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+  <v-container fluid>
+    <v-card>
+      <v-toolbar
+        dark
+        color="teal"
+        flat
+      >
+        <v-toolbar-title>회원 관리</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-autocomplete
+          v-model="email"
+          :loading="loadingSearch"
+          :items="emails"
+          :search-input.sync="search"
+          cache-items
+          class="mx-4"
+          flat
+          hide-no-data
+          hide-details
+          label="이메일을 입력하세요"
+          solo-inverted
+          clearable
+        ></v-autocomplete>
+        <v-btn icon @click="list" :disabled="loading">
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-container grid-list-md fluid>
+        <v-data-iterator
+          :items="items"
+          :options.sync="options"
+          :server-items-length="totalCount"
+          :items-per-page="4"
+          :loading="loading"
+          :footer-props="{
+            showFirstLastPage: true,
+            'items-per-page-options':[4, 8, 20],
+            'items-per-page-text': ''
+          }"
+        >
+          <template v-slot:loading>
+            <v-card color="transparent" flat v-if="loading">
+              <v-card-text class="text-center">
+                <v-progress-circular
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+              </v-card-text>
+              <v-card-text class="text-center">
+                데이터를 불러오는 중입니다.
+              </v-card-text>
+            </v-card>
+          </template>
+          <template v-slot:default="props">
+            <v-row>
+              <v-col cols="12" v-if="loading" class="text-center">
+                <v-card color="transparent" flat v-if="loading">
+                  <v-card-text class="text-center">
+                    <v-progress-circular
+                      indeterminate
+                      color="primary"
+                    ></v-progress-circular>
+                  </v-card-text>
+                  <v-card-text class="text-center">
+                    데이터를 불러오는 중입니다.
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              <v-col
+                v-else
+                cols="12"
+                v-for="item in props.items"
+                :key="item.email"
+                sm="6"
+                md="4"
+                lg="3"
+              >
+                <user-card :item="item" @del="list"></user-card>
+              </v-col>
+            </v-row>
+          </template>
+        </v-data-iterator>
+      </v-container>
+    </v-card>
+  </v-container>
 </template>
+
 <script>
+import _ from 'lodash'
+import UserCard from '@/components/userCard'
+
 export default {
-  props: ['item'],
+  components: { UserCard },
   data () {
     return {
-      loading: false,
-      levels: [
-        { text: '관리자', icon: 'mdi-account-key', color: 'primary' },
-        { text: '사용자', icon: 'mdi-account-check', color: 'success' },
-        { text: '손님', icon: 'mdi-account-alert', color: 'warning' }
+      headers: [
+        {
+          text: 'uid',
+          value: 'uid'
+        },
+        // uid, email, displayName, emailVerified, photoURL, disabled, level
+        { text: 'email', value: 'email' },
+        { text: 'displayName', value: 'displayName' },
+        { text: 'photoURL', value: 'photoURL' },
+        { text: 'level', value: 'level' }
       ],
-      showDetail: false
+      items: [],
+      totalCount: 0,
+      loading: false,
+      options: {
+        sortBy: ['email'],
+        sortDesc: [false]
+      },
+      search: '',
+      emails: [],
+      email: null,
+      loadingSearch: false
     }
   },
-  filters: {
-    nameCheck: function (v) {
-      if (v) return v
-      return 'no name'
+  watch: {
+    options: {
+      handler () {
+        this.list()
+      },
+      deep: true
     },
-    imgCheck (v) {
-      if (v) return v
-      return require('@/assets/images/account.png')
+    search (val) {
+      val && val !== this.email && this.searchEmails(val)
+    },
+    email (n, o) {
+      if (n !== o) this.list()
     }
   },
   methods: {
-    async levelChange (level) {
-      if (level === 0) {
-        const r = await this.$swal.fire({
-          title: '정말 변경하시겠습니까?',
-          text: '관리자는 권한은 위험할 수 있습니다.',
-          type: 'warning',
-          confirmButtonText: '확인',
-          cancelButtonText: '취소',
-          showCancelButton: true
-        })
-        if (!r.value) return
-      }
+    list () {
       this.loading = true
-      try {
-        await this.$axios.patch(`/admin/user/${this.item.uid}/level`, { level })
-      } catch (e) {
-        this.$toasted.global.error(e.message)
-      } finally {
-        this.loading = false
-      }
-    },
-    async del () {
-      const r = await this.$swal.fire({
-        title: '정말 삭제하시겠습니까?',
-        text: '삭제 후 되돌릴 수 없습니다.',
-        type: 'error',
-        // confirmButtonText: 'Cool',
-        showCancelButton: true
+      this.$axios.get('/admin/users', {
+        params: {
+          offset: this.options.page > 0 ? (this.options.page - 1) * this.options.itemsPerPage : 0,
+          limit: this.options.itemsPerPage,
+          order: this.options.sortBy[0],
+          sort: this.options.sortDesc[0] ? 'desc' : 'asc',
+          search: this.email
+        }
       })
-      if (!r.value) return
-      this.loading = true
-      try {
-        await this.$axios.delete(`/admin/user/${this.item.uid}`)
-        this.$emit('del')
-      } catch (e) {
-        this.$toasted.global.error(e.message)
-      } finally {
-        this.loading = false
-      }
-    }
+        .then(({ data }) => {
+          this.totalCount = data.totalCount
+          // const items = []
+          // data.items.forEach(v => {
+          //   v = v.createdAt.toDate()
+          //   items.push(v)
+          // })
+          this.items = data.items
+        })
+        .catch(e => {
+          this.$toasted.global.error(e.message)
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    searchEmails: _.debounce(
+      function (val) {
+        this.loadingSearch = true
+
+        this.$axios.get('/admin/search', {
+          params: { search: this.search }
+        })
+          .then(({ data }) => {
+            this.emails = data
+          })
+          .catch(e => {
+            this.$toasted.global.error(e.message)
+          })
+          .finally(() => {
+            this.loadingSearch = false
+          })
+      },
+      // 사용자가 입력을 기다리는 시간(밀리세컨드) 입니다.
+      500
+    )
   }
 }
 </script>
+
+<style>
+
+</style>

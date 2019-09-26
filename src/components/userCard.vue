@@ -4,6 +4,10 @@
       <v-toolbar-title>{{ item.email }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
+      <v-btn @click="showDetail = !showDetail" icon>
+        <v-icon>{{ showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+      </v-btn>
+
       <v-btn icon @click="del" color="error">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
@@ -66,7 +70,7 @@
             </v-list-item-action>
           </v-list-item>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" v-if="showDetail">
           <v-list-item two-line>
             <v-list-item-content>
               <v-list-item-title>
@@ -122,7 +126,8 @@ export default {
         { text: '관리자', icon: 'mdi-account-key', color: 'primary' },
         { text: '사용자', icon: 'mdi-account-check', color: 'success' },
         { text: '손님', icon: 'mdi-account-alert', color: 'warning' }
-      ]
+      ],
+      showDetail: false
     }
   },
   filters: {
