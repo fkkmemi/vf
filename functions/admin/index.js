@@ -34,7 +34,11 @@ app.get('/users', async (req, res) => {
   }
 
   s.forEach(v => {
-    r.items.push(v.data())
+    const item = v.data()
+    if (item.createdAt) item.createdAt = item.createdAt.toDate()
+    if (item.updatedAt) item.updatedAt = item.updatedAt.toDate()
+    if (item.visitedAt) item.visitedAt = item.visitedAt.toDate()
+    r.items.push(item)
   })
   res.send(r)
 })
