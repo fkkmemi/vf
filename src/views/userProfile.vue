@@ -31,7 +31,7 @@
                   <span class="title">계정 유형: {{levels[_.get($store.state.claims, 'level', 2)]}}</span>
                 </v-col>
                 <v-col cols="12">
-                  <v-alert type="warning" border="left" v-if="_.get($store.state.claims, 'level', 2) > 0">
+                  <v-alert type="warning" border="left" v-if="_.get($store.state.claims, 'level', 2) > 1">
                     페이지 접근을 위해 관리자에게 승인 요청을 하시기 바랍니다.
                   </v-alert>
                 </v-col>
@@ -140,12 +140,12 @@ export default {
           this.$toasted.global.error(error.code)
           this.loading = false
         }, () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            user.updateProfile({
-              photoURL: downloadURL
-            })
+          uploadTask.snapshot.ref.getDownloadURL().then(async (photoURL) => {
+            const updatedAt = new Date()
+            await user.updateProfile({ updatedAt, photoURL })
+            await this.$firebase.firestore().collection('users').doc(user.uid).update({ updatedAt, photoURL })
+            this.loading = false
           })
-          this.loading = false
         })
     },
     async changeName () {
@@ -159,9 +159,10 @@ export default {
       })
       if (!r.value) return
       const user = this.$firebase.auth().currentUser
-      await user.updateProfile({
-        displayName: `${this.form.lastName} ${this.form.firstName}`
-      })
+      const updatedAt = new Date()
+      const displayName = `${this.form.lastName} ${this.form.firstName}`
+      await user.updateProfile({ updatedAt, displayName })
+      await this.$firebase.firestore().collection('users').doc(user.uid).update({ updatedAt, displayName })
       location.reload()
     }
   }

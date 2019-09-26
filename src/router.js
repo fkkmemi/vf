@@ -5,12 +5,23 @@ import Home from './views/Home.vue'
 
 Vue.use(Router)
 
+const pageLogWrite = (to) => {
+  const { uid, email } = store.state.user
+  Vue.prototype.$firebase.firestore().collection('pageLogs').add({
+    uid,
+    email,
+    to: to.path,
+    createdAt: new Date()
+  })
+}
+
 const adminCheck = (to, form, next) => {
   if (!store.state.user) {
     if (to.path !== '/sign') return next('/sign')
   } else {
     if (!store.state.user.emailVerified) return next('/userProfile')
     if (store.state.claims.level > 0) throw Error('관리자만 들어갈 수 있습니다')
+    pageLogWrite(to)
   }
   next()
 }
@@ -20,6 +31,7 @@ const userCheck = (to, form, next) => {
   } else {
     if (!store.state.user.emailVerified) return next('/userProfile')
     if (store.state.claims.level > 1) throw Error('사용자만 들어갈 수 있습니다')
+    pageLogWrite(to)
   }
   next()
 }
@@ -29,6 +41,7 @@ const guestCheck = (to, form, next) => {
   } else {
     if (!store.state.user.emailVerified) return next('/userProfile')
     if (store.state.claims.level > 2) throw Error('손님만 들어갈 수 있습니다')
+    pageLogWrite(to)
   }
   next()
 }
@@ -77,6 +90,7 @@ const router = new Router({
       component: () => import('./views/userProfile.vue'),
       beforeEnter: (to, from, next) => {
         if (!store.state.user) return next('/sign')
+        pageLogWrite(to)
         next()
       }
     },
