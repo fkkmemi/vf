@@ -37,12 +37,13 @@
                 </v-col>
                 <v-col cols="12">
                   <v-file-input
-                    v-model="files"
+                    v-model="file"
                     label="사진 변경"
                     prepend-icon="mdi-camera"
                     @change="upload"
                     outlined
                   ></v-file-input>
+
                   <v-progress-linear v-if="progress > 0 && progress < 100" :value="progress"></v-progress-linear>
                 </v-col>
                 <v-col cols="4">
@@ -72,10 +73,12 @@
   </v-container>
 </template>
 <script>
+import { readAndCompressImage } from 'browser-image-resizer'
+
 export default {
   data () {
     return {
-      files: null,
+      file: null,
       loading: false,
       form: {
         firstName: '',
@@ -123,7 +126,19 @@ export default {
       const storageRef = this.$firebase.storage().ref()
       this.loading = true
       const user = this.$firebase.auth().currentUser
-      const uploadTask = storageRef.child(user.uid).put(this.files)
+      // const uploadTask = storageRef.child(user.uid).put(this.files)
+
+      const config = {
+        quality: 0.5,
+        maxWidth: 500,
+        maxHeight: 500,
+        autoRotate: true
+      }
+      const resizedImage = await readAndCompressImage(this.file, config)
+      // var metadata = {
+      //   contentType: 'image/jpeg',
+      // }
+      const uploadTask = storageRef.child(user.uid).put(resizedImage)
 
       uploadTask.on(this.$firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
         (snapshot) => {
