@@ -113,6 +113,16 @@ export default {
 
 new-project-f36b8-e568f7f61e3c.json -> /functions/key.json
 
+### Firebase upgrade
+
+Spark plan is too restrictive and is hard to use
+
+spark -> blaze
+
+![alt up](/public/images/스크린샷&#32;2019-09-29&#32;오전&#32;2.55.53.png)
+
+![alt up](/public/images/스크린샷&#32;2019-09-29&#32;오전&#32;2.56.16.png)
+
 ## firebase use
 
 ```bash
