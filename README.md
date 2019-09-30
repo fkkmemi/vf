@@ -172,6 +172,7 @@ push your repository
 ```bash
 $ git init
 $ git commit -m "first commit"
+$ git add .
 $ git remote add origin https://github.com/user/xxx.git
 $ git push -u origin master
 ```
