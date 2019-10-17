@@ -16,18 +16,18 @@
           Google 계정으로 가입
         </v-btn>
       </v-card-actions>
-      <v-container grid-list-md fluid>
-        <v-layout row wrap>
-          <v-flex xs5>
+      <v-container fluid>
+        <v-row>
+          <v-col cols="5">
             <v-divider class="mt-2"></v-divider>
-          </v-flex>
-          <v-flex xs2>
+          </v-col>
+          <v-col cols="2" class="text-center">
             또는
-          </v-flex>
-          <v-flex xs5>
+          </v-col>
+          <v-col cols="5">
             <v-divider class="mt-2"></v-divider>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
       </v-container>
       <v-card-text>
         <v-text-field

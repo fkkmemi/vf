@@ -15,35 +15,55 @@ const pageLogWrite = (to) => {
   })
 }
 
-const adminCheck = (to, form, next) => {
-  if (!store.state.user) {
-    if (to.path !== '/sign') return next('/sign')
-  } else {
-    if (!store.state.user.emailVerified) return next('/userProfile')
-    if (store.state.claims.level > 0) throw Error('관리자만 들어갈 수 있습니다')
-    pageLogWrite(to)
+// const adminCheck = (to, form, next) => {
+//   if (!store.state.user) {
+//     if (to.path !== '/sign') return next('/sign')
+//   } else {
+//     if (!store.state.user.emailVerified) return next('/userProfile')
+//     if (store.state.claims.level > 0) throw Error('관리자만 들어갈 수 있습니다')
+//     pageLogWrite(to)
+//   }
+//   next()
+// }
+// const userCheck = (to, form, next) => {
+//   if (!store.state.user) {
+//     if (to.path !== '/sign') return next('/sign')
+//   } else {
+//     if (!store.state.user.emailVerified) return next('/userProfile')
+//     if (store.state.claims.level > 1) throw Error('사용자만 들어갈 수 있습니다')
+//     pageLogWrite(to)
+//   }
+//   next()
+// }
+// const guestCheck = (to, form, next) => {
+//   if (!store.state.user) {
+//     if (to.path !== '/sign') return next('/sign')
+//   } else {
+//     if (!store.state.user.emailVerified) return next('/userProfile')
+//     if (store.state.claims.level > 2) throw Error('손님만 들어갈 수 있습니다')
+//     pageLogWrite(to)
+//   }
+//   next()
+// }
+
+const levelCheck = (level) => {
+  return (to, from, next) => {
+    if (!store.state.user) {
+      if (to.path !== '/sign') {
+        Vue.prototype.$toasted.global.error('로그인이 필요합니다')
+        return next('/sign')
+      }
+    } else {
+      const msg = [
+        '관리자 이상만 들어갈 수 있습니다',
+        '사용자 이상만 들어갈 수 있습니다',
+        '손님 이상만 들어갈 수 있습니다'
+      ]
+      if (store.state.claims.level > level) throw Error(msg[level])
+      pageLogWrite(to)
+    }
+    next()
   }
-  next()
-}
-const userCheck = (to, form, next) => {
-  if (!store.state.user) {
-    if (to.path !== '/sign') return next('/sign')
-  } else {
-    if (!store.state.user.emailVerified) return next('/userProfile')
-    if (store.state.claims.level > 1) throw Error('사용자만 들어갈 수 있습니다')
-    pageLogWrite(to)
-  }
-  next()
-}
-const guestCheck = (to, form, next) => {
-  if (!store.state.user) {
-    if (to.path !== '/sign') return next('/sign')
-  } else {
-    if (!store.state.user.emailVerified) return next('/userProfile')
-    if (store.state.claims.level > 2) throw Error('손님만 들어갈 수 있습니다')
-    pageLogWrite(to)
-  }
-  next()
 }
 
 const router = new Router({
@@ -54,7 +74,7 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      beforeEnter: userCheck
+      beforeEnter: levelCheck(1)
     },
     {
       path: '/sign',
@@ -68,22 +88,22 @@ const router = new Router({
     {
       path: '/admin/users',
       component: () => import('./views/admin/users'),
-      beforeEnter: adminCheck
+      beforeEnter: levelCheck(0)
     },
     {
       path: '/test/lv0',
       component: () => import('./views/test/lv0.vue'),
-      beforeEnter: adminCheck
+      beforeEnter: levelCheck(0)
     },
     {
       path: '/test/lv1',
       component: () => import('./views/test/lv1.vue'),
-      beforeEnter: userCheck
+      beforeEnter: levelCheck(1)
     },
     {
       path: '/test/lv2',
       component: () => import('./views/test/lv2.vue'),
-      beforeEnter: guestCheck
+      beforeEnter: levelCheck(2)
     },
     {
       path: '/userProfile',
