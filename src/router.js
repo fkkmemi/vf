@@ -12,39 +12,8 @@ const pageLogWrite = (to) => {
     email,
     to: to.path,
     createdAt: new Date()
-  })
+  }).catch((e) => console.log(e.message))
 }
-
-// const adminCheck = (to, form, next) => {
-//   if (!store.state.user) {
-//     if (to.path !== '/sign') return next('/sign')
-//   } else {
-//     if (!store.state.user.emailVerified) return next('/userProfile')
-//     if (store.state.claims.level > 0) throw Error('관리자만 들어갈 수 있습니다')
-//     pageLogWrite(to)
-//   }
-//   next()
-// }
-// const userCheck = (to, form, next) => {
-//   if (!store.state.user) {
-//     if (to.path !== '/sign') return next('/sign')
-//   } else {
-//     if (!store.state.user.emailVerified) return next('/userProfile')
-//     if (store.state.claims.level > 1) throw Error('사용자만 들어갈 수 있습니다')
-//     pageLogWrite(to)
-//   }
-//   next()
-// }
-// const guestCheck = (to, form, next) => {
-//   if (!store.state.user) {
-//     if (to.path !== '/sign') return next('/sign')
-//   } else {
-//     if (!store.state.user.emailVerified) return next('/userProfile')
-//     if (store.state.claims.level > 2) throw Error('손님만 들어갈 수 있습니다')
-//     pageLogWrite(to)
-//   }
-//   next()
-// }
 
 const levelCheck = (level) => {
   return (to, from, next) => {

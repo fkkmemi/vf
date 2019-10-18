@@ -1,5 +1,6 @@
 const app = require('express')()
 const cors = require('cors')
+const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 require('express-async-errors')
 
@@ -69,6 +70,8 @@ app.delete('/user/:uid', async (req, res) => {
   const uid = req.params.uid
   if (!uid) return res.status(400).end()
 
+  const r = await admin.auth().getUser(uid)
+  if (r.email === functions.config().admin.email) return res.status(403).end()
   await admin.auth().deleteUser(uid)
 
   res.status(204).end()

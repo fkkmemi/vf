@@ -10,12 +10,6 @@ service cloud.firestore {
       allow update: if resource.data.uid == request.auth.uid;
       allow delete: if false;
     }
-    match /reportDays/{date} {
-      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level < 2;
-      allow create: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level < 2;
-      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level < 1 || resource.data.uid == request.auth.uid;
-      allow delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level < 1 || resource.data.uid == request.auth.uid;
-    }
     match /reqLogs/{id} {
       allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level < 1;
       allow create: if false;

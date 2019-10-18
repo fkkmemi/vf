@@ -96,13 +96,16 @@ export default {
   },
   methods: {
     async signInWithGoogle () {
+      this.loading = true
       const provider = new this.$firebase.auth.GoogleAuthProvider()
       this.$firebase.auth().languageCode = 'ko'
-      this.loading = true
       try {
         await this.$firebase.auth().signInWithPopup(provider)
-        await this.$firebase.auth().signOut()
-        this.$emit('changeType')
+        const user = this.$firebase.auth().currentUser
+        await user.getIdToken()
+        await this.$store.dispatch('getUser', user)
+        if (this.$store.state.claims.level === undefined || this.$store.state.claims.level > 1) this.$router.push('/userProfile')
+        else this.$router.push('/')
       } catch (e) {
         this.$toasted.global.error(e.message)
       } finally {

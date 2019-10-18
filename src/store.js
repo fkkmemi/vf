@@ -35,7 +35,9 @@ export default new Vuex.Store({
         commit('setFirebaseLoaded')
         return null
       }
-      await dispatch('visitUser')
+      try {
+        await dispatch('visitUser')
+      } catch (e) { console.log(e.message) }
       await dispatch('getToken')
       commit('setFirebaseLoaded')
       return true

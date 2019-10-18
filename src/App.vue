@@ -169,6 +169,9 @@ export default {
       ]
     }
   },
+  '$store.state.user' (n) {
+    if (!n) this.drawer = false
+  },
   methods: {
     async signOut () {
       this.$firebase.auth().signOut()

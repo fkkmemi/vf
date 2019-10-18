@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading">
+  <v-card :loading="loading" :disabled="disabled">
     <v-toolbar color="transparent" dense flat>
       <v-toolbar-title>{{ item.email }}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -104,7 +104,7 @@
           <v-list-item two-line>
             <v-list-item-content>
               <v-list-item-title>
-                최근 방문 횟수
+                방문 횟수
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{item.visitCount}}
@@ -122,6 +122,7 @@ export default {
   data () {
     return {
       loading: false,
+      disabled: false,
       levels: [
         { text: '관리자', icon: 'mdi-account-key', color: 'primary' },
         { text: '사용자', icon: 'mdi-account-check', color: 'success' },
@@ -174,7 +175,8 @@ export default {
       this.loading = true
       try {
         await this.$axios.delete(`/admin/user/${this.item.uid}`)
-        this.$emit('del')
+        // this.$emit('del')
+        this.disabled = true
       } catch (e) {
         this.$toasted.global.error(e.message)
       } finally {
