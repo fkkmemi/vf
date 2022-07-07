@@ -19,7 +19,7 @@
     "browser-image-resizer": "^2.0.1",
     "core-js": "^2.6.5",
     "firebase": "^6.2.4",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "sweetalert2": "^8.17.6",
     "vue": "^2.6.10",
     "vue-progressbar": "^0.7.5",
